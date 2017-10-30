@@ -9,27 +9,33 @@ class node:
         self.frequency = frequency
 
     def __str__(self):
-        if self.character == '\t':
-            character = 'Tab'
-        elif self.character == '\n':
-            character = 'Nl'
-        elif self.character == ' ':
-            character = 'Space'
-        else:
-            character = self.character
+
+        character = node.usefull_char(self.character)
         output = 'Character: {} Frequency: {}'.format(character,
                                                       self.frequency)
+        return output
 
-        if self.recursive_print:
-            if self.left is not None:
-                output = '{}\n\t{}'.format(output, str(self.left))
-            else:
-                output = '{}\n\t{}'.format(output, '-' * 10)
+    def full_print(self, depth=0):
+        output = '{}{}'.format(str(self), '\n')
+        depth += 1
+        if self.left is not None:
+            output = '{}{}'.format(output, '\t' * depth)
+            output = '{}{}'.format(output, node.full_print(self.left,
+                                                           depth))
+        else:
+            output = '{}{}'.format(output, '\t' * depth)
+            output = '{}{}'.format(output, '-' * 10)
 
-            if self.right is not None:
-                output = '{}\n\t{}'.format(output, str(self.right))
-            else:
-                output = '{}\n\t{}'.format(output, '-' * 10)
+        output = '{}{}'.format(output, '\n')
+
+        if self.right is not None:
+            output = '{}{}'.format(output, '\t' * depth)
+            output = '{}{}'.format(output, node.full_print(self.right,
+                                                           depth))
+        else:
+            output = '{}{}'.format(output, '\t' * depth)
+            output = '{}{}'.format(output, '-' * 10)
+
         return output
 
     def addLeft(self, pNode):
@@ -49,6 +55,20 @@ class node:
             return True
         else:
             return False
+
+    @staticmethod
+    def usefull_char(char):
+        if char == '\t':
+            character = 'Tab'
+        elif char == '\n':
+            character = 'Nl'
+        elif char == ' ':
+            character = 'Space'
+        elif char == '':
+            character = 'NULL'
+        else:
+            character = char
+        return character
 
 
 class huffmanTree:
@@ -105,6 +125,17 @@ def clip_blank_Nodes(nodeList):
     return return_List
 
 
+def encode(node, dict={}, code=''):
+    if node.character is '':
+        if node.left is not None:
+            dict = encode(node.left, dict, '{}1'.format(code))
+        if node.right is not None:
+            dict = encode(node.right, dict, '{}0'.format(code))
+    else:
+        dict[node.character] = code
+    return dict
+
+
 def main():
     testNode1 = node()
     testNode1.right = node()
@@ -128,6 +159,16 @@ def main():
             testNodeKeep.right.count)
     except AttributeError:
         print 'Test Node Keep has lost it\'s value'
+
+    testNodeKeep = None
+    testNodeForget = None
+
+    testNodeKeep = node(frequency=0)
+    testNodeForget = node(frequency=5)
+    testNodeKeep.addRight(testNodeForget)
+
+    node.recursive_print = True
+    print str(testNodeKeep)
 
 
 if __name__ == '__main__':
