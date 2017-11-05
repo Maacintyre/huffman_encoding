@@ -10,7 +10,7 @@ class node:
 
     def __str__(self):
 
-        character = node.usefull_char(self.character)
+        character = node.clear_code_output(self.character)
         output = 'Character: {} Frequency: {}'.format(character,
                                                       self.frequency)
         return output
@@ -21,7 +21,8 @@ class node:
         if self.left is not None:
             output = '{}{}'.format(output, '\t' * depth)
             output = '{}{}'.format(output, node.full_print(self.left,
-                                                           depth))
+                                                           depth)
+                                   )
         else:
             output = '{}{}'.format(output, '\t' * depth)
             output = '{}{}'.format(output, '-' * 10)
@@ -31,7 +32,8 @@ class node:
         if self.right is not None:
             output = '{}{}'.format(output, '\t' * depth)
             output = '{}{}'.format(output, node.full_print(self.right,
-                                                           depth))
+                                                           depth)
+                                   )
         else:
             output = '{}{}'.format(output, '\t' * depth)
             output = '{}{}'.format(output, '-' * 10)
@@ -57,7 +59,7 @@ class node:
             return False
 
     @staticmethod
-    def usefull_char(char):
+    def clear_char_output(char):
         if char == '\t':
             character = 'Tab'
         elif char == '\n':
@@ -69,6 +71,20 @@ class node:
         else:
             character = char
         return character
+
+    def encode_tree(self, dict={}, code=''):
+        if self.character is '':
+            if self.left is not None:
+                dict = self.left.encode_tree(dict=dict,
+                                             code='{}1'.format(code)
+                                             )
+            if self.right is not None:
+                dict = self.right.encode_tree(dict=dict,
+                                              code='{}0'.format(code)
+                                              )
+        else:
+            dict[self.clear_char_output(self.character)] = code
+        return dict
 
 
 class huffmanTree:
@@ -106,7 +122,7 @@ class huffmanTree:
             return False
 
 
-def sortNodes(nodeList):
+def sort_nodes(nodeList):
 
     for i in range(len(nodeList) - 1, 0, -1):
         for j in range(i):
@@ -117,23 +133,12 @@ def sortNodes(nodeList):
     return nodeList
 
 
-def clip_blank_Nodes(nodeList):
+def clip_blank_nodes(nodeList):
     return_List = []
     for i in nodeList:
         if i.frequency > 0:
             return_List.append(i)
     return return_List
-
-
-def encode(node, dict={}, code=''):
-    if node.character is '':
-        if node.left is not None:
-            dict = encode(node.left, dict, '{}1'.format(code))
-        if node.right is not None:
-            dict = encode(node.right, dict, '{}0'.format(code))
-    else:
-        dict[node.character] = code
-    return dict
 
 
 def main():
